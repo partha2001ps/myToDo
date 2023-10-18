@@ -145,7 +145,7 @@ function App() {
                     className="btn btn-success mt-2"
                     onClick={handleSaveEdit}
                   >
-                    Save
+                    Save 
                   </button>
                 )}
               </div>
