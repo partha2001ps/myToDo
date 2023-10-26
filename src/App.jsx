@@ -1,87 +1,63 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [todos, setTodos] = useState([]);
   const [todoName, setTodoName] = useState('');
-  const [todoDescription, setTodoDescription] = useState('');
-  const [filter, setFilter] = useState('All');
+  const [tododes, setTododes] = useState('');
+  const [todoes, settodoes] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-
+  const [filter, setFilter] = useState('All')
   const handleAddTodo = () => {
-    if (todoName && todoDescription) {
+    if (todoName && tododes) {
       const newTodo = {
         name: todoName,
-        description: todoDescription,
+        des: tododes,
         status: 'Not Completed',
       };
-
-      setTodos([...todos, newTodo]);
+      settodoes([...todoes, newTodo]);
       setTodoName('');
-      setTodoDescription('');
+      setTododes('');
     }
-  };
+  }
 
-  const handleStatusChange = (index, newStatus) => {
-    const updatedTodos = [...todos];
-    updatedTodos[index].status = newStatus;
-    setTodos(updatedTodos);
-  };
-
-  const handleEditStatus = (index) => {
-    setEditIndex(index);
-  };
-
-  const handleSaveEdit = () => {
-    setEditIndex(null);
-  };
-
-  const handleDeleteTodo = (index) => {
-    const updatedTodos = [...todos];
+  const handleDelete = (index) => {
+    const updatedTodos = [...todoes];
     updatedTodos.splice(index, 1);
-    setTodos(updatedTodos);
-  };
+    settodoes(updatedTodos);
+  }
 
+  const handleEdit = (index) => {
+    setEditIndex(index);
+  }
+
+  const handleSave = (index, newStatus) => {
+    const updatedTodos = [...todoes];
+    updatedTodos[index].status = newStatus;
+    settodoes(updatedTodos);
+    setEditIndex(null);
+  }
+  const filteredTodos = todoes.filter((todo) => {
+    if (filter === 'All') return true;
+    return todo.status === filter;
+  });
   const getBackgroundColor = (status) => {
     if (status === 'Completed') {
       return 'green';
     } else if (status === 'Not Completed') {
       return 'red';
     }
-    return 'white'; // Default background color
+    return 'white';
   };
-
-  const filteredTodos = todos.filter((todo) => {
-    if (filter === 'All') return true;
-    return todo.status === filter;
-  });
-
   return (
     <div>
-      <div>
-        <h3 className='text-center text-success'>My Todo</h3>
-        <input
-          id='name'
+      <h1 className='text-center text-success'>My Todos</h1>
+      <input id='name'
           className='mx-4 mt-4 border border-success'
-          placeholder='Todo Name'
-          value={todoName}
-          onChange={(e) => setTodoName(e.target.value)}
-        />
-        <input
-          id='description'
+          placeholder='Todo Name' value={todoName} onChange={(e) => setTodoName(e.target.value)} />
+      <input id='description'
           className='mx-4 border border-success'
-          placeholder='Todo Description'
-          value={todoDescription}
-          onChange={(e) => setTodoDescription(e.target.value)}
-        />
-        <button
-          className='mb-2 mx-4 btn btn-success btn btn-primary btn-sm'
-          onClick={handleAddTodo}
-        >
-          Add Todo
-        </button>
-      </div>
-
+          placeholder='Todo Description' value={tododes} onChange={(e) => setTododes(e.target.value)} />
+      <button  className='mb-2 mx-4 btn btn-success btn btn-primary btn-sm' onClick={handleAddTodo}>Add todo</button>
       <div className="d-flex justify-content-between">
         <h5 className='inline'>My Todos</h5>
         <div className="d-flex align-items-center">
@@ -99,60 +75,30 @@ function App() {
           </div>
         </div>
       </div>
-
-      <div>
-        {filteredTodos.map((todo, index) => (
-          <div
-            className="card"
-            id='cardall'
-            key={index}
-            
-          >
-            <div className="card-body">
-              <h5 className="card-title">Name: {todo.name}</h5>
-              <p className="card-text">Description: {todo.description}</p>
-              <div className="form-group">
-                <label>Status:</label>
-                {editIndex === index ? (
-                  <select style={{ backgroundColor: getBackgroundColor(todo.status) }}
-                    className="form-control"
-                    value={todo.status}
-                    onChange={(e) => handleStatusChange(index, e.target.value)}
-                  >
-                    <option value="Not Completed">Not Completed</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                ) : (
-                  <div>
-                    {todo.status}
-                    <br />
-                    <button
-                      className="btn btn-warning mt-2"
-                      onClick={() => handleEditStatus(index)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-primary mt-2 mx-2"
-                      onClick={() => handleDeleteTodo(index)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
-                {editIndex === index && (
-                  <button
-                    className="btn btn-success mt-2"
-                    onClick={handleSaveEdit}
-                  >
-                    Save 
-                  </button>
-                )}
-              </div>
-            </div>
+       
+      { filteredTodos.map((todo, index) => (
+        <div className='card'  id='cardall' key={index}> 
+          <div className='card-title'>
+            <h2> Name: {todo.name}</h2>
           </div>
-        ))}
-      </div>
+          <div className='mt-3 mb-3'>
+            <h4>Description: {todo.des}</h4>
+          </div>
+          <div>
+            <label >Status:</label>
+            {editIndex === index?(
+            <select className="form-control" value={todo.status} onChange={(e)=>handleSave(index,e.target.value)}>
+              <option value="NOt Completed">Not Completed</option>
+              <option value="Completed">Completed</option>
+             </select>
+            ):
+              (<span style={{background:getBackgroundColor(todo.status)}}>{ todo.status}</span>)}
+          </div>
+          {editIndex === index ?
+            ( <button   className="btn btn-success mt-2" onClick={()=>handleSave(index,todo.status)}>Save</button>): <button className="btn btn-warning mt-2" onClick={()=>handleEdit(index)}>Edit</button>}
+          <button  className="btn btn-primary mt-2 mx-2" onClick={() => handleDelete(index)}>Delete</button>
+        </div>
+      ))}
     </div>
   );
 }
