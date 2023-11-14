@@ -1,15 +1,8 @@
-#cardall{
-  width: 300px;
+#card{
+  width: 325px;
+  height: 210px;
   display: inline-block;
-  margin: 20px;
-  padding: 10px;
-  background-color: rgb(125, 233, 197);
-}
-/* Add these CSS classes to your App.css */
-.completed-todo {
-  background-color: green;
-}
-
-.not-completed-todo {
-  background-color: red;
+  margin: 25px;
+  margin-top: 10px;
+  background-color: rgb(206, 254, 238);
 }

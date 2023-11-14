@@ -1,104 +1,176 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './App.css';
 
 function App() {
+  const [todos, setTodos] = useState([]);
   const [todoName, setTodoName] = useState('');
-  const [tododes, setTododes] = useState('');
-  const [todoes, settodoes] = useState([]);
+  const [todoDescription, setTodoDescription] = useState('');
+  const [filter, setFilter] = useState('All');
   const [editIndex, setEditIndex] = useState(null);
-  const [filter, setFilter] = useState('All')
+
   const handleAddTodo = () => {
-    if (todoName && tododes) {
+    if (todoName && todoDescription) {
       const newTodo = {
         name: todoName,
-        des: tododes,
+        description: todoDescription,
         status: 'Not Completed',
       };
-      settodoes([...todoes, newTodo]);
+
+      setTodos([...todos, newTodo]);
       setTodoName('');
-      setTododes('');
+      setTodoDescription('');
     }
-  }
+  };
 
-  const handleDelete = (index) => {
-    const updatedTodos = [...todoes];
-    updatedTodos.splice(index, 1);
-    settodoes(updatedTodos);
-  }
-
-  const handleEdit = (index) => {
-    setEditIndex(index);
-  }
-
-  const handleSave = (index, newStatus) => {
-    const updatedTodos = [...todoes];
+  const handleStatusChange = (index, newStatus) => {
+    const updatedTodos = [...todos];
     updatedTodos[index].status = newStatus;
-    settodoes(updatedTodos);
+    setTodos(updatedTodos);
+  };
+
+  const handleEditStatus = (index) => {
+    setEditIndex(index);
+  };
+
+  const handleSaveEdit = () => {
     setEditIndex(null);
-  }
-  const filteredTodos = todoes.filter((todo) => {
+  };
+
+  const handleDeleteTodo = (index) => {
+    const updatedTodos = [...todos];
+    updatedTodos.splice(index, 1);
+    setTodos(updatedTodos);
+  };
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+  };
+
+  const filteredTodos = todos.filter((todo) => {
     if (filter === 'All') return true;
     return todo.status === filter;
   });
-  const getBackgroundColor = (status) => {
-    if (status === 'Completed') {
-      return 'green';
-    } else if (status === 'Not Completed') {
-      return 'red';
-    }
-    return 'white';
-  };
+
   return (
     <div>
-      <h1 className='text-center text-success'>My Todos</h1>
-      <input id='name'
+      <div>
+        <h3 className='text-center text-success'>My Todo</h3>
+        <input
+          id='name'
           className='mx-4 mt-4 border border-success'
-          placeholder='Todo Name' value={todoName} onChange={(e) => setTodoName(e.target.value)} />
-      <input id='description'
+          placeholder='Todo Name'
+          value={todoName}
+          onChange={(e) => setTodoName(e.target.value)}
+        />
+        <input
+          id='description'
           className='mx-4 border border-success'
-          placeholder='Todo Description' value={tododes} onChange={(e) => setTododes(e.target.value)} />
-      <button  className='mb-2 mx-4 btn btn-success btn btn-primary btn-sm' onClick={handleAddTodo}>Add todo</button>
+          placeholder='Todo Description'
+          value={todoDescription}
+          onChange={(e) => setTodoDescription(e.target.value)}
+        />
+        <button
+          className='mb-2 mx-4 btn btn-success btn btn-primary btn-sm'
+          onClick={handleAddTodo}
+        >
+          Add Todo
+        </button>
+      </div>
+
       <div className="d-flex justify-content-between">
-        <h5 className='inline'>My Todos</h5>
+        <h5 className='mx-3 mt-4'>My Todos</h5>
         <div className="d-flex align-items-center">
-          <h5 className='inline right'>Status Filter:</h5>
-          <div className="dropdown inline right">
+          <h5 className='mx-3 mt-4'>Status Filter:</h5>
+          <div className="custom-dropdown  mt-4">
             <select
-              className="form-control"
+              className={`form-control ${
+                filter === 'All'
+                  ? 'bg-danger text-white'
+                  : filter === 'Completed'
+                  ? 'bg-success text-white'
+                  : 'bg-danger'
+              }`}
               value={filter}
-              onChange={(e) => setFilter(e.target.value)}
+              onChange={(e) => handleFilterChange(e.target.value)}
             >
-              <option value="All">All</option>
-              <option value="Completed"  >Completed</option>
-              <option value="Not Completed">Not Completed</option>
+              <option value="All" className="bg-danger">
+                All
+              </option>
+              <option value="Completed" className="bg-success">
+                Completed
+              </option>
+              <option value="Not Completed" className="bg-danger">
+                Not Completed
+              </option>
             </select>
           </div>
         </div>
       </div>
-       
-      { filteredTodos.map((todo, index) => (
-        <div className='card'  id='cardall' key={index}> 
-          <div className='card-title'>
-            <h2> Name: {todo.name}</h2>
+
+      <div>
+        {filteredTodos.map((todo, index) => (
+          <div className="card" id='card' key={index}>
+            <div className="card-body">
+              <h5 className="card-title">Name: {todo.name}</h5>
+              <p className="card-text">Description: {todo.description}</p>
+              <div className="form-group">
+                {editIndex === index ? (
+                  <select
+                    className={`form-control ${
+                      todo.status === 'Not Completed'
+                        ? 'bg-danger'
+                        : 'bg-success'
+                    }`}
+                    value={todo.status}
+                    onChange={(e) => handleStatusChange(index, e.target.value)}
+                  >
+                    <option value="Not Completed">Not Completed</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                ) : (
+                  <div>
+                    <label>Status:</label>
+                    <span
+                      className={`badge ${
+                        todo.status === 'Not Completed'
+                          ? 'bg-danger'
+                          : 'bg-success'
+                      } mx-2`}
+                    >
+                      {todo.status}
+                    </span>
+                  </div>
+                )}
+                <div>
+                  {editIndex === index ? (
+                    <button
+                      className="btn btn-success mt-2"
+                      onClick={handleSaveEdit}
+                    >
+                      Save
+                    </button>
+                  ) : (
+                    <div>
+                      <button
+                        className="btn btn-success mx-4 mt-4"
+                        onClick={() => handleEditStatus(index)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-danger mt-4"
+                        onClick={() => handleDeleteTodo(index)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-          <div className='mt-3 mb-3'>
-            <h4>Description: {todo.des}</h4>
-          </div>
-          <div>
-            <label >Status:</label>
-            {editIndex === index?(
-            <select className="form-control" value={todo.status} onChange={(e)=>handleSave(index,e.target.value)}>
-              <option value="NOt Completed">Not Completed</option>
-              <option value="Completed">Completed</option>
-             </select>
-            ):
-              (<span style={{background:getBackgroundColor(todo.status)}}>{ todo.status}</span>)}
-          </div>
-          {editIndex === index ?
-            ( <button   className="btn btn-success mt-2" onClick={()=>handleSave(index,todo.status)}>Save</button>): <button className="btn btn-warning mt-2" onClick={()=>handleEdit(index)}>Edit</button>}
-          <button  className="btn btn-primary mt-2 mx-2" onClick={() => handleDelete(index)}>Delete</button>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
